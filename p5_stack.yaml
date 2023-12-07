@@ -1,0 +1,11 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+    Image:
+        Type: String
+        Description: The image to deploy
+Resources:
+    P5Queue:
+        Type: AWS::SQS::Queue
+        Properties:
+            QueueName: P5Queue
+
