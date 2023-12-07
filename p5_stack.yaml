@@ -1,11 +1,58 @@
 AWSTemplateFormatVersion: 2010-09-09
 Parameters:
-    Image:
-        Type: String
-        Description: The image to deploy
+  QueueName:
+    Type: String
+  FunctionAName:
+    Type: String
+  FunctionACode:
+    Type: String
+  FunctionBName:
+    Type: String
+  FunctionBCode:
+    Type: String
+  FunctionCName:
+    Type: String
+  FunctionCCode:
+    Type: String
 Resources:
-    P5Queue:
-        Type: AWS::SQS::Queue
-        Properties:
-            QueueName: P5Queue
+  Queue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Ref QueueName
+  FunctionA:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref FunctionAName
+      Code:
+        ZipFile: !Ref FunctionACode
+      Handler: index.lambda_handler
+      Role: arn:aws:iam::989870301024:role/LabRole
+      Runtime: python3.11
+      Environment:
+        Variables:
+          QUEUE_URL: !GetAtt Queue.QueueUrl
+  FunctionB:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref FunctionBName
+      Code:
+        ZipFile: !Ref FunctionBCode
+      Handler: index.lambda_handler
+      Role: arn:aws:iam::989870301024:role/LabRole
+      Runtime: python3.11
+      Environment:
+        Variables:
+          QUEUE_URL: !GetAtt Queue.QueueUrl
+  FunctionC:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref FunctionCName
+      Code:
+        ZipFile: !Ref FunctionCCode
+      Handler: index.lambda_handler
+      Role: arn:aws:iam::989870301024:role/LabRole
+      Runtime: python3.11
+      Environment:
+        Variables:
+          QUEUE_URL: !GetAtt Queue.QueueUrl
 

@@ -9,19 +9,22 @@ class CloudFormationClient:
         self.client = boto3.client("cloudformation")
 
     def create_stack_from_template_file(self, name: str, template_path: str,
-                                        *, template_params: dict[str, str], wait=True):
+                                        *, template_params: dict[str, str] = None, wait=True):
         with open(template_path) as file:
             stack_template = file.read()
         self.create_stack(name, stack_template, template_params=template_params, wait=wait)
 
-    def create_stack(self, name: str, template: str, *, template_params: dict[str, str], wait=True):
-        self.client.create_stack(StackName=name, TemplateBody=template, OnFailure="DELETE", Parameters=[
-            {"ParameterKey": key, "ParameterValue": value} for key, value in template_params.items()
-        ])
+    def create_stack(self, name: str, template: str, *, template_params: dict[str, str] = None, wait=True):
+        parameters = [] if template_params is None else self._dict_to_parameters(template_params)
+        self.client.create_stack(StackName=name, TemplateBody=template, OnFailure="DELETE", Parameters=parameters)
         if wait:
             print("Creating CloudFormation stack...")
             while not self.stack_has_been_created(stack_name=name):
                 sleep(3)
+
+    @staticmethod
+    def _dict_to_parameters(template_params: dict[str, str]):
+        return [{"ParameterKey": key, "ParameterValue": value} for key, value in template_params.items()]
 
     def delete_stack(self, name: str, *, wait=True):
         self.client.delete_stack(StackName=name)
