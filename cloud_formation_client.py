@@ -51,3 +51,8 @@ class CloudFormationClient:
             return status
         except ClientError:
             return None
+
+    def get_stack_outputs(self, stack_name: str):
+        description = self.client.describe_stacks(StackName=stack_name)
+        outputs = description["Stacks"][0]["Outputs"]
+        return {output["OutputKey"]: output["OutputValue"] for output in outputs}

@@ -12,4 +12,4 @@ class LambdaClient:
         if print_logs:
             print(f"Invoked {function_name}. \n"
                   f"Status code: {response['StatusCode']}. \n"
-                  f"Logs: {base64.b64decode(response["LogResult"]).decode("utf-8")}\n")
+                  f"Logs: {base64.b64decode(response['LogResult']).decode('utf-8')}\n")

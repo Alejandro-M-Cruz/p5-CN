@@ -2,6 +2,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 from cloud_formation_client import CloudFormationClient
 from lambda_client import LambdaClient
+from sns_client import SnsClient
 
 
 def main(delete=False, only_invoke=False):
@@ -28,8 +29,15 @@ def main(delete=False, only_invoke=False):
             },
             wait=True
         )
+        sns_topic_arn = cloud_formation.get_stack_outputs(stack_name="p5-stack")["TopicArn"]
+        with open(".topic_arn", "w") as f:
+            f.write(sns_topic_arn)
+    else:
+        with open(".topic_arn") as f:
+            sns_topic_arn = f.read()
+    sns_client = SnsClient()
+    sns_client.publish(topic_arn=sns_topic_arn, message="Hello from p5.py.")
     lambda_client = LambdaClient()
-    lambda_client.invoke(function_name="p5-function-a")
     lambda_client.invoke(function_name="p5-function-b")
     lambda_client.invoke(function_name="p5-function-c")
 
