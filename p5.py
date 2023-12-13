@@ -5,11 +5,11 @@ from lambda_client import LambdaClient
 from sns_client import SnsClient
 
 
-def main(delete=False, only_invoke=False):
+def main(only_delete=False, only_invoke=False):
     if not only_invoke:
         cloud_formation = CloudFormationClient()
         cloud_formation.delete_stack(name="p5-stack", wait=True)
-        if delete:
+        if only_delete:
             return
         code = {}
         for code_file in ["function_a.py", "function_b.py", "function_c.py"]:
@@ -44,7 +44,7 @@ def main(delete=False, only_invoke=False):
 
 if __name__ == "__main__":
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-d", "--delete", action="store_true", help="delete the stack", default=False)
+    parser.add_argument("-d", "--only-delete", action="store_true", help="delete the stack and exit", default=False)
     parser.add_argument("--only-invoke", action="store_true", help="invoke lambda functions and exit", default=False)
     args = vars(parser.parse_args())
-    main(delete=args["delete"], only_invoke=args["only_invoke"])
+    main(only_delete=args["only_delete"], only_invoke=args["only_invoke"])
